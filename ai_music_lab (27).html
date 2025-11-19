@@ -1,0 +1,643 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI音乐实验室</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ff8a00, #e52e71);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .slogan {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 80px 20px;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(15, 12, 41, 0.8), rgba(48, 43, 99, 0.8), rgba(36, 36, 62, 0.8));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url(' https://lrui73909-byte.github.io/-shouye-/网站宣传图.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #ff8a00, #e52e71);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(90deg, #ff8a00, #e52e71);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 138, 0, 0.3);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 22px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .feature-desc {
+            font-size: 16px;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .mood-slider-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .mood-slider {
+            width: 100%;
+            height: 60px;
+            -webkit-appearance: none;
+            background: transparent;
+            margin: 20px 0;
+        }
+
+        .mood-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 60px;
+            height: 60px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            cursor: pointer;
+        }
+
+        .mood-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .mood-label {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        .audio-player {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            opacity: 0.7;
+            font-size: 14px;
+        }
+
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .selection-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .selection-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .selection-img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .selection-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .hidden-audio {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">AI音乐实验室</div>
+            <div class="slogan">AI创造音乐与听歌新体验</div>
+        </header>
+
+        <section class="hero">
+            <div <h1></h1>
+            <div
+            <div
+            <div <p>融合人工智能与音乐创作，为您带来前所未有的音乐体验</p>
+            <div <button class="cta-button">开始体验</button>
+        </section>
+
+        <section class="features">
+            <div class="feature-card" id="mood-music">
+                <div class="feature-icon">🎵</div>
+                <h3 class="feature-title">心情点唱机</h3>
+                <p class="feature-desc">拖动下方按钮，一键匹配您的专属心情音乐。</p>
+
+                <div class="mood-slider-container">
+                    <input type="range" min="0" max="100" value="50" class="mood-slider" id="moodSlider">
+                    <div class="mood-labels">
+                        <span class="mood-label">悲伤</span>
+                        <span class="mood-label">中性</span>
+                        <span class="mood-label">高兴</span>
+                    </div>
+                    <button class="cta-button" id="playMoodMusic" style="margin-top: 20px;">播放心情音乐</button>
+                    <audio class="audio-player" id="moodAudio" controls style="display: none;"></audio>
+                </div>
+            </div>
+
+            <div class="feature-card" id="ai-voice">
+                <div class="feature-icon">🎤</div>
+                <h3 class="feature-title">AI仿声</h3>
+                <p class="feature-desc">想听喜欢的歌手演唱您的心动歌曲吗？点击下方，开始体验！。</p>
+                <button class="cta-button" style="margin-top: 20px;" id="openVoiceModal">体验AI仿声</button>
+            </div>
+
+            <div class="feature-card" id="ai-style">
+                <div class="feature-icon">🎸</div>
+                <h3 class="feature-title">AI换曲风</h3>
+                <p class="feature-desc">摇滚还是民谣？常听的歌也可以大变身。</p>
+                <button class="cta-button" style="margin-top: 20px;" id="openStyleModal">体验AI换曲风</button>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2025 AI音乐实验室 | 探索音乐与AI的无限可能</p>
+        </footer>
+    </div>
+
+    <!-- AI仿声弹窗 -->
+    <div class="modal" id="voiceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">AI仿声 - 选择歌曲</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <p>选择一首歌曲，然后选择一位歌手，AI将生成该歌手演唱这首歌曲的版本。</p>
+
+            <div class="selection-grid" id="voiceSongs">
+                <!-- 歌曲选择项将通过JS动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- AI换曲风弹窗 -->
+    <div class="modal" id="styleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">AI换曲风 - 选择歌曲</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <p>选择一首歌曲，然后选择一种曲风，AI将用该曲风重新演绎这首歌曲。</p>
+
+            <div class="selection-grid" id="styleSongs">
+                <!-- 歌曲选择项将通过JS动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 歌手选择弹窗 -->
+    <div class="modal" id="singerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">AI仿声 - 选择歌手</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <p>选择一位歌手，AI将生成该歌手演唱您选择歌曲的版本。</p>
+
+            <div class="selection-grid" id="singers">
+                <!-- 歌手选择项将通过JS动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 曲风选择弹窗 -->
+    <div class="modal" id="genreModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">AI换曲风 - 选择曲风</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <p>选择一种曲风，AI将用该曲风重新演绎您选择的歌曲。</p>
+
+            <div class="selection-grid" id="genres">
+                <!-- 曲风选择项将通过JS动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 隐藏的音频播放器 -->
+    <audio id="voiceAudioPlayer" class="hidden-audio" controls></audio>
+    <audio id="styleAudioPlayer" class="hidden-audio" controls></audio>
+
+    <script>
+        // 心情音乐功能
+        const moodSlider = document.getElementById('moodSlider');
+        const playMoodButton = document.getElementById('playMoodMusic');
+        const moodAudio = document.getElementById('moodAudio');
+
+        // 使用GitHub上的音频URL - 现在各有3首高兴和3首悲伤
+        const happySongs = ['https://raw.githubusercontent.com/Daisyydc/music-files/main/稻香-周杰伦.mp3', 'https://raw.githubusercontent.com/Daisyydc/music-files/main/跳楼机-LBI利比.时柏尘.mp3', 'https://daisyydc.github.io/music-files/青春修炼手册-TFBOYS.mp3'];
+        const sadSongs = ['https://raw.githubusercontent.com/Daisyydc/music-files/main/以后别做朋友-周兴哲.mp3', 'https://raw.githubusercontent.com/Daisyydc/music-files/main/泪桥-伍佰.mp3', 'https://daisyydc.github.io/music-files/新不了情-萧敬腾.mp3'];
+
+        // AI仿声音频URL
+        const aiVoiceSongs = {'1_1': 'https://daisyydc.github.io/music-file-aisinger-jb/比伯-稻香.mp3', '1_2': 'https://daisyydc.github.io/music-file-aisinger-zs/周深-稻香.mp3', '1_3': 'https://daisyydc.github.io/music-file-aisinger-syz/孙燕姿-稻香.mp3', '1_4': 'https://daisyydc.github.io/music-file-aisinger-ljj/林俊杰-稻香.mp3', '2_1': 'https://daisyydc.github.io/music-file-aisinger-jb/比伯-泪桥.mp3', '2_2': 'https://daisyydc.github.io/music-file-aisinger-zs/周深-泪桥.mp3', '2_3': 'https://daisyydc.github.io/music-file-aisinger-syz/孙燕姿-泪桥.mp3', '2_4': 'https://daisyydc.github.io/music-file-aisinger-ljj/林俊杰-泪桥.mp3', '3_1': 'https://daisyydc.github.io/music-file-aisinger-jb/比伯-以后别做朋友.mp3', '3_2': 'https://daisyydc.github.io/music-file-aisinger-zs/周深-以后别做朋友.mp3', '3_3': 'https://daisyydc.github.io/music-file-aisinger-syz/孙燕姿-以后别做朋友.mp3', '3_4': 'https://daisyydc.github.io/music-file-aisinger-ljj/林俊杰-以后别做朋友.mp3', '4_1': 'https://daisyydc.github.io/music-file-aisinger-jb/比伯-跳楼机.mp3', '4_2': 'https://daisyydc.github.io/music-file-aisinger-zs/周深-跳楼机.mp3', '4_3': 'https://daisyydc.github.io/music-file-aisinger-syz/孙燕姿-跳楼机.mp3', '4_4': 'https://daisyydc.github.io/music-file-aisinger-ljj/林俊杰-跳楼机.mp3'};
+
+        // AI换曲风音频URL
+        const aiStyleSongs = {'1_1': 'https://daisyydc.github.io/music-file-style/稻香-摇滚.mp3', '1_2': 'https://daisyydc.github.io/music-file-style/稻香-民谣.mp3', '1_3': 'https://daisyydc.github.io/music-file-style/稻香-R&B.mp3', '2_1': 'https://daisyydc.github.io/music-file-style/泪桥-摇滚.mp3', '2_2': 'https://daisyydc.github.io/music-file-style/泪桥-民谣.mp3', '2_3': 'https://daisyydc.github.io/music-file-style/稻香-R&B.mp3', '3_1': 'https://daisyydc.github.io/music-file-style2/以后别做朋友-摇滚.mp3', '3_2': 'https://daisyydc.github.io/music-file-style2/以后别做朋友-民谣.mp3', '3_3': 'https://daisyydc.github.io/music-file-style2/以后别做朋友-R&B.mp3', '4_1': 'https://daisyydc.github.io/music-file-style2/跳楼机-摇滚.mp3', '4_2': 'https://daisyydc.github.io/music-file-style2/跳楼机-民谣呢.mp3', '4_3': 'https://daisyydc.github.io/music-file-style2/跳楼机-R&B.mp3'};
+
+        // 图片URL
+        const voiceSongImages = {1: 'https://lrui73909-byte.github.io/-shouye-/稻香歌曲图片.jpeg', 2: 'https://lrui73909-byte.github.io/-shouye-/泪桥歌曲图片.jpeg', 3: 'https://lrui73909-byte.github.io/-shouye-/以后别做朋友歌曲图片.jpeg', 4: ' https://lrui73909-byte.github.io/-shouye-/跳楼机歌曲图片.jpeg'};
+        const singerImages = {1: ' https://lrui73909-byte.github.io/-shouye-/贾斯汀比伯歌手海报.jpeg', 2: ' https://lrui73909-byte.github.io/-shouye-/周深歌手海报.jpeg', 3: ' https://lrui73909-byte.github.io/-shouye-/孙燕姿歌手海报.jpeg', 4: ' https://lrui73909-byte.github.io/-shouye-/林俊杰歌手海报.jpeg'};
+        const styleSongImages = {1: ' https://lrui73909-byte.github.io/-shouye-/稻香歌曲图片.jpeg', 2: ' https://lrui73909-byte.github.io/-shouye-/泪桥歌曲图片.jpeg', 3: ' https://lrui73909-byte.github.io/-shouye-/以后别做朋友歌曲图片.jpeg', 4: ' https://lrui73909-byte.github.io/-shouye-/跳楼机歌曲图片.jpeg'};
+        const genreImages = {1: 'https://lrui73909-byte.github.io/-shouye-/摇滚.jpeg', 2: 'https://lrui73909-byte.github.io/-shouye-/民谣.jpeg', 3: 'https://lrui73909-byte.github.io/-shouye-/R&B.jpeg'};
+
+        playMoodButton.addEventListener('click', function() {
+            const moodValue = parseInt(moodSlider.value);
+
+            // 根据心情值选择歌曲
+            let songList;
+            if (moodValue > 60) {
+                // 高兴心情 - 现在有3首
+                songList = happySongs;
+            } else if (moodValue < 40) {
+                // 悲伤心情 - 现在有3首
+                songList = sadSongs;
+            } else {
+                // 中性心情 - 随机选择高兴或悲伤歌曲
+                songList = Math.random() > 0.5 ? happySongs : sadSongs;
+            }
+
+            // 随机选择一首歌曲
+            if (songList.length > 0) {
+                const randomIndex = Math.floor(Math.random() * songList.length);
+                moodAudio.src = songList[randomIndex];
+                moodAudio.style.display = 'block';
+                moodAudio.play().catch(e => {
+                    console.error('播放错误:', e);
+                    alert('播放音频时出错，请检查音频URL是否正确或网络连接');
+                });
+            } else {
+                alert('请先设置音频文件URL');
+            }
+        });
+
+        // 弹窗功能
+        const voiceModal = document.getElementById('voiceModal');
+        const styleModal = document.getElementById('styleModal');
+        const singerModal = document.getElementById('singerModal');
+        const genreModal = document.getElementById('genreModal');
+        const closeButtons = document.querySelectorAll('.close-modal');
+        const voiceAudioPlayer = document.getElementById('voiceAudioPlayer');
+        const styleAudioPlayer = document.getElementById('styleAudioPlayer');
+
+        // 打开AI仿声弹窗
+        document.getElementById('openVoiceModal').addEventListener('click', function() {
+            voiceModal.style.display = 'flex';
+            populateVoiceSongs();
+        });
+
+        // 打开AI换曲风弹窗
+        document.getElementById('openStyleModal').addEventListener('click', function() {
+            styleModal.style.display = 'flex';
+            populateStyleSongs();
+        });
+
+        // 关闭弹窗
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                voiceModal.style.display = 'none';
+                styleModal.style.display = 'none';
+                singerModal.style.display = 'none';
+                genreModal.style.display = 'none';
+            });
+        });
+
+        // 点击弹窗外部关闭
+        window.addEventListener('click', function(event) {
+            if (event.target === voiceModal) {
+                voiceModal.style.display = 'none';
+            }
+            if (event.target === styleModal) {
+                styleModal.style.display = 'none';
+            }
+            if (event.target === singerModal) {
+                singerModal.style.display = 'none';
+            }
+            if (event.target === genreModal) {
+                genreModal.style.display = 'none';
+            }
+        });
+
+        // 填充AI仿声歌曲选择
+        function populateVoiceSongs() {
+            const voiceSongsContainer = document.getElementById('voiceSongs');
+            voiceSongsContainer.innerHTML = '';
+
+            const voiceSongs = [
+                { id: 1, name: '稻香' },
+                { id: 2, name: '泪桥' },
+                { id: 3, name: '以后别做朋友' },
+                { id: 4, name: '跳楼机' }
+            ];
+
+            voiceSongs.forEach(song => {
+                const songElement = document.createElement('div');
+                songElement.className = 'selection-item';
+                const imageUrl = voiceSongImages[song.id] || 'https://via.placeholder.com/150';
+                songElement.innerHTML = `
+                    <img src="${imageUrl}" class="selection-img" alt="${song.name}">
+                    <div class="selection-name">${song.name}</div>
+                `;
+
+                songElement.addEventListener('click', function() {
+                    voiceModal.style.display = 'none';
+                    singerModal.style.display = 'flex';
+                    populateSingers(song.id);
+                });
+
+                voiceSongsContainer.appendChild(songElement);
+            });
+        }
+
+        // 填充AI仿声歌手选择
+        function populateSingers(selectedSongId) {
+            const singersContainer = document.getElementById('singers');
+            singersContainer.innerHTML = '';
+
+            const singers = [
+                { id: 1, name: 'Justin Bieber' },
+                { id: 2, name: '周深' },
+                { id: 3, name: '孙燕姿' },
+                { id: 4, name: '林俊杰' }
+            ];
+
+            singers.forEach(singer => {
+                const singerElement = document.createElement('div');
+                singerElement.className = 'selection-item';
+                const imageUrl = singerImages[singer.id] || 'https://via.placeholder.com/150';
+                singerElement.innerHTML = `
+                    <img src="${imageUrl}" class="selection-img" alt="${singer.name}">
+                    <div class="selection-name">${singer.name}</div>
+                `;
+
+                singerElement.addEventListener('click', function() {
+                    // 播放对应的AI仿声歌曲
+                    const songKey = `${selectedSongId}_${singer.id}`;
+                    if (aiVoiceSongs[songKey]) {
+                        voiceAudioPlayer.src = aiVoiceSongs[songKey];
+                        voiceAudioPlayer.play().catch(e => {
+                            console.error('播放错误:', e);
+                            alert('播放音频时出错，请检查音频URL是否正确');
+                        });
+                    } else {
+                        alert('该歌曲版本暂不可用');
+                    }
+                    singerModal.style.display = 'none';
+                });
+
+                singersContainer.appendChild(singerElement);
+            });
+        }
+
+        // 填充AI换曲风歌曲选择
+        function populateStyleSongs() {
+            const styleSongsContainer = document.getElementById('styleSongs');
+            styleSongsContainer.innerHTML = '';
+
+            const styleSongs = [
+                { id: 1, name: '稻香' },
+                { id: 2, name: '泪桥' },
+                { id: 3, name: '以后别做朋友' },
+                { id: 4, name: '跳楼机' }
+            ];
+
+            styleSongs.forEach(song => {
+                const songElement = document.createElement('div');
+                songElement.className = 'selection-item';
+                const imageUrl = styleSongImages[song.id] || 'https://via.placeholder.com/150';
+                songElement.innerHTML = `
+                    <img src="${imageUrl}" class="selection-img" alt="${song.name}">
+                    <div class="selection-name">${song.name}</div>
+                `;
+
+                songElement.addEventListener('click', function() {
+                    styleModal.style.display = 'none';
+                    genreModal.style.display = 'flex';
+                    populateGenres(song.id);
+                });
+
+                styleSongsContainer.appendChild(songElement);
+            });
+        }
+
+        // 填充AI换曲风曲风选择
+        function populateGenres(selectedSongId) {
+            const genresContainer = document.getElementById('genres');
+            genresContainer.innerHTML = '';
+
+            const genres = [
+                { id: 1, name: '摇滚' },
+                { id: 2, name: '民谣' },
+                { id: 3, name: 'R&B' }
+            ];
+
+            genres.forEach(genre => {
+                const genreElement = document.createElement('div');
+                genreElement.className = 'selection-item';
+                const imageUrl = genreImages[genre.id] || 'https://via.placeholder.com/150';
+                genreElement.innerHTML = `
+                    <img src="${imageUrl}" class="selection-img" alt="${genre.name}">
+                    <div class="selection-name">${genre.name}</div>
+                `;
+
+                genreElement.addEventListener('click', function() {
+                    // 播放对应的AI换曲风歌曲
+                    const songKey = `${selectedSongId}_${genre.id}`;
+                    if (aiStyleSongs[songKey]) {
+                        styleAudioPlayer.src = aiStyleSongs[songKey];
+                        styleAudioPlayer.play().catch(e => {
+                            console.error('播放错误:', e);
+                            alert('播放音频时出错，请检查音频URL是否正确');
+                        });
+                    } else {
+                        alert('该曲风版本暂不可用');
+                    }
+                    genreModal.style.display = 'none';
+                });
+
+                genresContainer.appendChild(genreElement);
+            });
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 可以在这里添加初始化代码
+        });
+    </script>
+</body>
+</html>
